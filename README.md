@@ -2,7 +2,7 @@
 
 A comprehensive platform built to connect students with alumni for inspiration, mentorship, and professional opportunities.
 
-## Why This Platform Exists
+## Why I have Built this Platform
 
 As a student at BITS, I noticed there was no easy way to communicate with alumni, resulting in missed opportunities for job updates, career guidance, and motivation. This platform bridges that gap that many colleges don't address, helping students get inspired, find internships, and participate in alumni-led events.
 
