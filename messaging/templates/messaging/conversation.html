@@ -1,0 +1,250 @@
+{% extends "users/base.html" %}
+{% load static %}
+
+{% block title %}Conversation with {{ recipient.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-lg border-0">
+    <!-- Card Header -->
+    <div class="card-header bg-primary text-white d-flex align-items-center rounded-top">
+      {% if recipient.profile_pic %}
+        <img src="{{ recipient.profile_pic.url }}" alt="{{ recipient.username }}" 
+             class="rounded-circle me-2" style="width:45px; height:45px; border: 2px solid #fff;">
+      {% else %}
+        <img src="{% static 'default.jpg' %}" alt="{{ recipient.username }}" 
+             class="rounded-circle me-2" style="width:45px; height:45px; border: 2px solid #fff;">
+      {% endif %}
+      <h5 class="mb-0">Chat with {{ recipient.username }}</h5>
+    </div>
+    
+    <!-- Chat Window -->
+    <div id="chatWindow" class="card-body chat-container">
+      {% for message in messages %}
+      <div class="message-container {% if message.sender == user %}sent{% else %}received{% endif %}">
+        {% if message.sender != user %}
+          <img src="{{ message.sender.profile_pic.url|default_if_none:"{% static 'default.jpg' %}" }}" class="message-avatar">
+        {% endif %}
+        
+        <div class="message-bubble shadow-sm">
+          {{ message.body }}
+          <small class="message-time">{{ message.timestamp|date:"M d, Y H:i" }}</small>
+        </div>
+
+        {% if message.sender == user %}
+          <img src="{{ message.sender.profile_pic.url|default_if_none:"{% static 'default.jpg' %}" }}" class="message-avatar">
+        {% endif %}
+      </div>
+      {% empty %}
+      <p class="text-center text-muted">No messages yet.</p>
+      {% endfor %}
+    </div>
+    
+    <!-- Message Form -->
+    <div class="card-footer bg-light">
+      <form id="messageForm" method="post">
+        {% csrf_token %}
+        <div class="input-group">
+          <textarea name="body" id="message_body" class="form-control" placeholder="Type your message..." rows="1" required></textarea>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-send-fill"></i> Send
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>
+<!-- JavaScript for Auto-Scrolling and WebSocket -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const chatWindow = document.getElementById("chatWindow");
+    chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll on page load
+
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const recipientId = "{{ recipient.id }}";
+    const chatSocket = new WebSocket(wsScheme + '://' + window.location.host + '/ws/chat/' + recipientId + '/');
+
+    chatSocket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      const isCurrentUser = data.sender_id == "{{ user.id }}";
+      const profilePic = data.sender_profile_pic_url || "{% static 'default.jpg' %}";
+      const alignmentClass = isCurrentUser ? "sent" : "received";
+
+      const messageElem = document.createElement("div");
+      messageElem.classList.add("message-container", alignmentClass);
+      messageElem.innerHTML = `
+        ${!isCurrentUser ? `<img src="${profilePic}" class="message-avatar">` : ""}
+        <div class="message-bubble">
+          ${data.message}
+          <small class="message-time">${new Date(data.timestamp).toLocaleTimeString()}</small>
+        </div>
+        ${isCurrentUser ? `<img src="${profilePic}" class="message-avatar">` : ""}
+      `;
+
+      chatWindow.appendChild(messageElem);
+      chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: "smooth" }); // Smooth scrolling
+    };
+
+    document.getElementById("messageForm").onsubmit = function (e) {
+      e.preventDefault();
+      const messageInput = document.getElementById("message_body");
+      const message = messageInput.value.trim();
+      if (message === "") return;
+
+      chatSocket.send(JSON.stringify({ message }));
+      messageInput.value = "";
+    };
+  });
+</script>
+<style>
+  .chat-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 0 0 0.75rem 0.75rem;
+  }
+
+  .message-container {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease;
+  }
+
+  .message-container:hover {
+    transform: translateX(5px);
+  }
+
+  .sent {
+    flex-direction: row-reverse;
+  }
+
+  .message-bubble {
+    padding: 1rem 1.25rem;
+    border-radius: 1.5rem;
+    max-width: 75%;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    transition: all 0.2s ease;
+  }
+
+  .sent .message-bubble {
+    background: linear-gradient(135deg, #3f51b5, #2196f3);
+    color: white;
+    border-radius: 1.5rem 1.5rem 0.25rem 1.5rem;
+    margin-left: 0.5rem;
+  }
+
+  .received .message-bubble {
+    background: #ffffff;
+    color: #2d3748;
+    border-radius: 1.5rem 1.5rem 1.5rem 0.25rem;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.08);
+    margin-right: 0.5rem;
+  }
+
+  .message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
+    flex-shrink: 0;
+  }
+
+  .sent .message-avatar {
+    border-color: #bfdbfe;
+  }
+
+  .received .message-avatar {
+    border-color: #e2e8f0;
+  }
+
+  .message-time {
+    display: block;
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+    opacity: 0.85;
+  }
+
+  .sent .message-time {
+    color: #ebf4ff;
+  }
+
+  .received .message-time {
+    color: #718096;
+  }
+
+  /* Custom Scrollbar */
+  .chat-container::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .chat-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .chat-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+
+  /* Input Styling */
+  #message_body {
+    border-radius: 0.75rem;
+    border: 2px solid #e2e8f0;
+    resize: none;
+    padding: 0.75rem 1rem;
+  }
+
+  #message_body:focus {
+    border-color: #3f51b5;
+    box-shadow: none;
+  }
+
+  .btn-primary {
+    border-radius: 0.75rem;
+    padding: 0.5rem 1.5rem;
+    margin-left: 0.5rem;
+    background: #3f51b5;
+    border: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: #2c387e;
+    transform: translateY(-1px);
+  }
+
+  .card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .card-header {
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+    background: linear-gradient(135deg, #3f51b5, #2196f3);
+  }
+
+  @media (max-width: 576px) {
+    .message-avatar {
+      width: 35px;
+      height: 35px;
+    }
+    
+    .message-bubble {
+      max-width: 85%;
+      font-size: 0.9rem;
+    }
+    
+    .chat-container {
+      padding: 15px;
+    }
+  }
+</style>
+{% endblock %}

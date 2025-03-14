@@ -1,0 +1,57 @@
+{% load static %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Send a New Message</h4>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% url 'messaging:send_message' %}">
+        {% csrf_token %}
+        
+        <!-- Recipient Select Field -->
+        <div class="mb-3">
+          <label for="recipient" class="form-label">To</label>
+          <select id="recipient" name="recipient" class="form-select" required>
+            {% for connection in connections %}
+              <option value="{{ connection.id }}">{{ connection.username }}</option>
+            {% empty %}
+              <option disabled>No connections available</option>
+            {% endfor %}
+          </select>
+          <small class="form-text text-muted">Select a connection to send your message.</small>
+        </div>
+        
+        <!-- Message Textarea Field -->
+        <div class="mb-3">
+          <label for="message_body" class="form-label">Message</label>
+          <textarea id="message_body" name="body" class="form-control" rows="4" placeholder="Type your message here..." required></textarea>
+          <small class="form-text text-muted">Maximum 500 characters.</small>
+          <div id="charCount" class="text-end text-muted"></div>
+        </div>
+        
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-send-fill me-1"></i>Send Message
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- JavaScript for Character Counter -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var textarea = document.getElementById('message_body');
+      var charCount = document.getElementById('charCount');
+      
+      function updateCharCount() {
+        charCount.textContent = textarea.value.length + " characters";
+      }
+      
+      // Update counter on input
+      textarea.addEventListener('input', updateCharCount);
+      
+      // Initialize count on page load
+      updateCharCount();
+    });
+  </script>
+  

@@ -1,0 +1,26 @@
+{% extends "users/base.html" %}
+
+{% block title %}Notification Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Notification Details</h2>
+    <p>
+        <strong>{{ notification.actor.username }}</strong> {{ notification.verb }}
+    </p>
+    <p>
+        Received at: {{ notification.timestamp|date:"M d, Y H:i" }}
+    </p>
+    {% if notification.target_url %}
+        <p>
+            <!-- Updated to redirect to a view that marks the notification as read before redirecting -->
+            <a href="{% url 'mark_notification_as_read' notification.id %}" class="btn btn-info">
+                Go to related page
+            </a>
+        </p>
+    {% endif %}
+    <p>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Return to Dashboard</a>
+    </p>
+</div>
+{% endblock %}
