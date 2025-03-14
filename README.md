@@ -37,19 +37,3 @@ As a student at BITS, I noticed there was no easy way to communicate with alumni
 
 
 
-Project Structure
-Copyalumni_networking_platform/
-├── alumni_network/       # Main Django app directory
-├── events/               # Events module
-├── jobs/                 # Jobs and opportunities module
-├── media/                # User uploaded content
-│   └── profile_pics/     # Profile pictures
-├── messaging/            # Real-time messaging module
-├── notifications/        # User notification system
-├── profile_pics/         # Additional profile images
-├── static/               # Static files (CSS, JS)
-├── users/                # User management module
-├── README.md             # This file
-├── __init__.py           # Python package initialization
-├── db.sqlite3            # SQLite database
-└── manage.py             # Django management script
