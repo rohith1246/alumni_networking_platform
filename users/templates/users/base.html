@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="BITS Alumni Network - Connect with fellow alumni and students">
+  <meta name="theme-color" content="#003366">
+  
+  <title>{% block title %}Alumni Networking Platform{% endblock %} | BITS Alumni Network</title>
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+  <style>
+    /* Root Variables */
+    :root {
+      --primary-color: #003366;
+      --accent-color: #ffc72c;
+      --text-light: #ffffff;
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+      --transition-default: all 0.3s ease;
+    }
+    
+    /* Navbar Styling */
+    .navbar {
+      background-color: var(--primary-color) !important;
+      box-shadow: var(--shadow-md);
+      padding: 1rem 0;
+    }
+    
+    .navbar-brand {
+      font-weight: 600;
+      color: var(--text-light) !important;
+    }
+    
+    .navbar-nav .nav-link {
+      color: var(--text-light) !important;
+      transition: var(--transition-default);
+      padding: 0.5rem 1rem;
+      position: relative;
+    }
+    
+    .navbar-nav .nav-link:hover {
+      color: var(--accent-color) !important;
+    }
+    
+    .navbar-nav .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background-color: var(--accent-color);
+      transition: var(--transition-default);
+      transform: translateX(-50%);
+    }
+    
+    .navbar-nav .nav-link:hover::after {
+      width: 80%;
+    }
+    
+    .navbar-toggler {
+      border-color: var(--accent-color);
+      padding: 0.5rem;
+    }
+    
+    .navbar-toggler:focus {
+      box-shadow: 0 0 0 0.2rem rgba(255, 199, 44, 0.25);
+    }
+    
+    .navbar-toggler-icon {
+      filter: invert(1);
+    }
+    
+    /* Search Form */
+    .search-form {
+      position: relative;
+    }
+    
+    .search-form .form-control {
+      border-radius: 20px;
+      padding-left: 1rem;
+      padding-right: 3rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-light);
+    }
+    
+    .search-form .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .search-form .btn {
+      border-radius: 20px;
+      padding: 0.375rem 1.5rem;
+    }
+    
+    /* Notifications */
+    .notification-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform: translate(50%, -50%);
+    }
+    
+    .dropdown-menu {
+      box-shadow: var(--shadow-md);
+      border: none;
+      border-radius: 0.5rem;
+    }
+    
+    .dropdown-item {
+      padding: 0.75rem 1rem;
+      transition: var(--transition-default);
+    }
+    
+    .dropdown-item:hover {
+      background-color: rgba(0, 51, 102, 0.05);
+    }
+    
+    /* Main Content Area */
+    .main-content {
+      min-height: calc(100vh - 76px);
+      padding: 2rem 0;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 991.98px) {
+      .navbar-collapse {
+        background-color: var(--primary-color);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-top: 1rem;
+      }
+      .search-form {
+        margin: 1rem 0;
+      }
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <!-- Brand -->
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard' %}">
+        <i class="bi bi-mortarboard-fill me-2"></i>
+        BITS Alumni Network
+      </a>
+      
+      <!-- Toggler Button -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <!-- Navbar Links -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <!-- Left-side Nav Links -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          {% if user.is_authenticated and user.user_type == "alumni" %}
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'job_post' %}">
+              <i class="bi bi-plus-circle me-1"></i>Post a Job
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <!-- Replaced empty URL with 'job_list' -->
+            <a class="nav-link d-flex align-items-center" href="{% url 'job_list' %}">
+              <i class="bi bi-briefcase me-1"></i>Job Listings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'event_list' %}">
+              <i class="bi bi-calendar-event me-1"></i>Events
+            </a>
+          </li>
+          {% if user.is_authenticated and user.user_type == "alumni" %}
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'event_create' %}">
+              <i class="bi bi-plus-circle me-1"></i>Create Event
+            </a>
+          </li>
+          {% endif %}
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'dashboard' %}">
+              <i class="bi bi-speedometer2 me-1"></i>Dashboard
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+        
+        <!-- Search Form -->
+        <form class="search-form d-flex me-3" method="GET" action="{% url 'user_search' %}">
+          <input class="form-control" type="search" placeholder="Search for friends or alumni" 
+                 aria-label="Search" name="q" autocomplete="off">
+          <button class="btn btn-outline-light ms-2" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+        
+        <!-- Right-side Nav Links -->
+        <ul class="navbar-nav align-items-center">
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'profile' %}">
+              <i class="bi bi-person-circle me-1"></i>Profile
+            </a>
+          </li>
+          
+          <!-- Notifications Dropdown -->
+          <li class="nav-item dropdown position-relative">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" 
+               id="notificationsDropdown" role="button" data-bs-toggle="dropdown" 
+               aria-expanded="false">
+              <i class="bi bi-bell me-1"></i>Notifications
+              {% if notifications and notifications|length > 0 %}
+              <span class="badge bg-danger notification-badge">
+                {{ notifications|length }}
+              </span>
+              {% endif %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+              {% if notifications %}
+                {% for notification in notifications %}
+                <li>
+                  <div class="dropdown-item d-flex justify-content-between align-items-center">
+                    <div class="me-3">
+                      <strong>{{ notification.actor.username }}</strong> 
+                      {{ notification.verb }}
+                    </div>
+                    <a href="{% url 'mark_notification_as_read' notification.id %}" 
+                       class="btn btn-sm btn-success">View</a>
+                  </div>
+                </li>
+                {% endfor %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item text-success text-center" 
+                     href="{% url 'mark_all_notifications_as_read' %}">
+                    <i class="bi bi-check2-all me-1"></i>Mark All as Read
+                  </a>
+                </li>
+              {% else %}
+                <li>
+                  <span class="dropdown-item text-muted text-center">
+                    <i class="bi bi-bell-slash me-1"></i>No new notifications
+                  </span>
+                </li>
+              {% endif %}
+            </ul>
+          </li>
+          <!-- Inside your <ul class="navbar-nav ml-auto"> in the base template -->
+{% if user.is_authenticated %}
+<!-- Other links like Profile and Logout -->
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inbox' %}">Messages</a>
+</li>
+{% endif %}
+
+          <li class="nav-item">
+            <a class="nav-link text-danger d-flex align-items-center" href="{% url 'logout' %}">
+              <i class="bi bi-box-arrow-right me-1"></i>Logout
+            </a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'login' %}">
+              <i class="bi bi-box-arrow-in-right me-1"></i>Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'register' %}">
+              <i class="bi bi-person-plus me-1"></i>Register
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,52 @@
+{% extends "users/base.html" %}
+{% load dict_extras %}
+{% load static %}
+
+{% block title %}Find Alumni{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Find Alumni</h2>
+    {% if alumni %}
+        <ul class="list-group mt-3">
+            {% for alumnus in alumni %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <!-- Left side: Profile Pic + Username linked to alumni details -->
+                    <div class="d-flex align-items-center">
+                        {% if alumnus.profile_pic %}
+                            <img src="{{ alumnus.profile_pic.url }}" alt="{{ alumnus.username }}'s Profile Picture" 
+                                 class="rounded-circle me-2" style="width:40px; height:40px;">
+                        {% else %}
+                            <img src="{% static 'default_profile.png' %}" alt="{{ alumnus.username }}'s Profile Picture" 
+                                 class="rounded-circle me-2" style="width:40px; height:40px;">
+                        {% endif %}
+                        <a href="{% url 'user_detail' alumnus.id %}" class="text-decoration-none">
+                            {{ alumnus.username }}
+                        </a>
+                    </div>
+                    
+                    <!-- Right side: Connection status or Connect button -->
+                    <div>
+                        {% with status=connections|dict_get:alumnus.id %}
+                            {% if status == "approved" %}
+                                <span class="badge bg-success">Connected</span>
+                            {% elif status == "pending" %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif status == "rejected" %}
+                                <span class="badge bg-danger">Rejected</span>
+                            {% else %}
+                                <form method="post" action="{% url 'send_connection_request' alumnus.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Connect</button>
+                                </form>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted mt-3">No alumni found.</p>
+    {% endif %}
+</div>
+{% endblock %}

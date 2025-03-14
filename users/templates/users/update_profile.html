@@ -1,0 +1,23 @@
+{# users/templates/users/update_profile.html #}
+{% extends "users/base.html" %}
+
+{% block title %}Update Profile Photo{% endblock %}
+
+{% block content %}
+  <h2>Update Profile Photo</h2>
+  
+  <!-- Display the current profile photo file name -->
+  <p><strong>Profile pic:</strong> Currently: {{ user.profile_pic.url }}</p>
+  
+  <!-- File input for updating the profile photo -->
+  <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Update</button>
+  </form>
+  
+  <!-- Optionally, you can show a static text; however, the browser default usually displays "No file chosen" -->
+  <p><em>Change: No file chosen</em></p>
+  
+  <a href="{% url 'profile' %}" class="btn btn-secondary mt-3">Back to Profile</a>
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends "users/base.html" %}
+
+{% block title %}Register - BITS Alumni Network{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg">
+                <!-- Registration Header -->
+                <div class="card-header bg-gradient-primary text-white text-center p-4 border-0">
+                    <h1 class="h3 mb-0">Create Your Account</h1>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" class="registration-form" novalidate>
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                            <div class="form-group mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-bold mb-2">
+                                    {{ field.label }}
+                                    {% if field.field.required %}
+                                        <span class="text-danger">*</span>
+                                    {% endif %}
+                                </label>
+
+                                <div class="input-group">
+                                    {% if field.name == 'profile_pic' %}
+                                        <label class="input-group-text" for="{{ field.id_for_label }}">
+                                            <i class="bi bi-image me-2"></i>Choose File
+                                        </label>
+                                    {% endif %}
+                                    
+                                    {{ field }}
+                                    
+                                    {% if field.name == 'password' %}
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+
+                                {% if field.help_text %}
+                                    <div class="form-text text-muted small mt-1">
+                                        {{ field.help_text }}
+                                    </div>
+                                {% endif %}
+
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-person-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="mb-0">
+                            Already have an account? 
+                            <a href="{% url 'login' %}" class="text-primary text-decoration-none">
+                                Sign in here
+                                <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #003366, #0055a4);
+    }
+
+    /* Form Styling */
+    .form-control, .form-select {
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #0055a4;
+        box-shadow: 0 0 0 0.25rem rgba(0, 85, 164, 0.25);
+    }
+
+    /* Custom File Input */
+    .input-group-text {
+        cursor: pointer;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem 0 0 0.5rem;
+    }
+
+    /* Button Styling */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .toggle-password {
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+
+    /* Card Styling */
+    .card {
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    /* Error Styling */
+    .invalid-feedback {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .btn {
+            padding: 0.625rem 1.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Company Field Toggle
+    const userTypeSelect = document.getElementById("id_user_type");
+    const companyField = document.querySelector("[name='company']")?.closest(".form-group");
+
+    function toggleCompanyField() {
+        if (companyField) {
+            companyField.style.display = userTypeSelect.value === "student" ? "none" : "block";
+        }
+    }
+
+    if (userTypeSelect && companyField) {
+        toggleCompanyField();
+        userTypeSelect.addEventListener("change", toggleCompanyField);
+    }
+
+    // Password Visibility Toggle
+    const togglePasswordButtons = document.querySelectorAll(".toggle-password");
+    
+    togglePasswordButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            const input = this.previousElementSibling;
+            const icon = this.querySelector("i");
+            
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("bi-eye", "bi-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.replace("bi-eye-slash", "bi-eye");
+            }
+        });
+    });
+
+    // File Input Enhancement
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const fileName = this.files[0]?.name;
+            const label = this.previousElementSibling;
+            
+            if (label && fileName) {
+                label.textContent = fileName.length > 20 
+                    ? fileName.substring(0, 17) + '...' 
+                    : fileName;
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
