@@ -35,5 +35,15 @@ As a student at BITS, I noticed there was no easy way to communicate with alumni
 - **HTML, Bootstrap, JavaScript**: Frontend technologies
 - **Django Channels & Daphne**: Added to enable real-time messaging via WebSockets
 
+![Demo](12.gif) 
+
+
+
+
+
+![Demo](34.gif)
+
+
+
 
 
