@@ -1,0 +1,13 @@
+
+{% extends "users/base.html" %}
+
+{% block title %}Job Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ job.title }}</h2>
+    <p><strong>Posted by:</strong> {{ job.posted_by.username }}</p>
+    <p>{{ job.description }}</p>
+    <a href="{% url 'job_list' %}" class="btn btn-secondary">Back to Job Listings</a>
+</div>
+{% endblock %}

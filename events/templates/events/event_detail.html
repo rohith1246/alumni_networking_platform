@@ -1,0 +1,14 @@
+{% extends "users/base.html" %}
+
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+  <h2>{{ event.title }}</h2>
+  <p>{{ event.description }}</p>
+  <p>
+    <strong>Date:</strong> {{ event.event_date|date:"F j, Y, g:i a" }}<br>
+    <strong>Location:</strong> {{ event.location }}<br>
+    <strong>Created by:</strong> {{ event.created_by.username }} on {{ event.created_at|date:"F j, Y, g:i a" }}
+  </p>
+  <a href="{% url 'event_list' %}" class="btn btn-secondary">Back to Events</a>
+{% endblock %}

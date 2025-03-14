@@ -1,0 +1,28 @@
+{% extends "users/base.html" %}
+
+{% block title %}Post a Job{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if request.user.is_authenticated and request.user.user_type == "alumni" %}
+        <div class="card shadow-lg p-4">
+            <h2 class="text-center mb-4">Post a Job</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-dark">Submit</button>
+                    <a href="{% url 'job_list' %}" class="btn btn-secondary ml-2">Back to Job Listings</a>
+                    
+                </div>
+            </form>
+        </div>
+    {% else %}
+        <div class="alert alert-danger text-center">
+            <p>You are not authorized to post a job. Only alumni can post jobs.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
