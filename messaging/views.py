@@ -39,33 +39,7 @@ def conversation(request, recipient_id):
     }
     return render(request, 'messaging/conversation.html', context)
 
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from .models import Message
-from users.models import Friendship
-from django.contrib.auth import get_user_model
 
-User = get_user_model()
-
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from .models import Message
-from users.models import Friendship  # Make sure this path is correct
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
-
-
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from .models import Message
-from users.models import Friendship  # Adjust the import if needed
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 @login_required
 def inbox(request):

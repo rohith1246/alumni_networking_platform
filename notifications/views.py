@@ -10,7 +10,7 @@ from .models import Notification
 @login_required
 def mark_notification_as_read(request, notification_id):
     notification = get_object_or_404(Notification, id=notification_id, recipient=request.user)
-    notification.unread= False
+    notification.read = True
     notification.save()
      # Mark the notification as read
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))

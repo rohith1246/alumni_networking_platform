@@ -18,8 +18,7 @@ class CustomUser(AbstractUser):
     connections = models.ManyToManyField(
         'self',
         symmetrical=True,  # or False, depending on your desired behavior
-        blank=True,
-        related_name='user_connections'
+        blank=True
     )
     def __str__(self):
         return self.username
@@ -55,7 +54,6 @@ class ConnectionRequest(models.Model):
         default='pending'
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    connections = models.ManyToManyField('self', blank=True)
 
     class Meta:
         unique_together = ('from_user', 'to_user')
