@@ -41,7 +41,7 @@ As a student at BITS, I noticed there was no easy way to communicate with alumni
 
 
 
-![Demo](34.gif)
+
 
 
 
